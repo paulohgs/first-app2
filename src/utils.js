@@ -12,6 +12,8 @@
     }
 
  }
+
+ 
  
  let delay = (min, max)=>{
      let useRandomDelay = (arguments.length === 2);

@@ -1,6 +1,7 @@
 /*
 * Exemplo de aplicação Node.js com MongoDB
 * Autor: Wellington Wagner F. Sarmento
+* Colaborador: Paulo Henrique Gomes da Silva
 * 
 *
 * Este exemplo foi baseado no código escrito em:
@@ -12,7 +13,7 @@
 
 const express = require("express");
 const app = express();
-const routes = require("./routes");
+const routes = require("./routes/routes");
 const expressLayouts = require("express-ejs-layouts");
 const { urlencoded } = require("express");
 
@@ -20,7 +21,7 @@ const { urlencoded } = require("express");
 const port=3030;
 const address = "localhost";
 
-const utils = require("./utils");
+const utils = require("./src/utils");
 
 const faker = require("faker"); //modulo usado para criar dados fakes aleatorios para testes
 

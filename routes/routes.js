@@ -1,5 +1,9 @@
 const express = require("express");
+const {
+    address
+} = require("faker");
 const router = express.Router();
+const utils = require('../src/utils');
 
 
 //Especifica a pasta contendo arquivos estáticos. 
@@ -24,102 +28,170 @@ http://localhost:3030/index.html
 
 
 //Req é um objeto que recebe dados da requisição HTTP feita (request). Res permite enviar uma resposta ao navegador (Response)
-router.get('/',(req,res)=>{ //callback - funcao que trata dado evento GET
+router.get('/', (req, res) => { //callback - funcao que trata dado evento GET
     res.render('pages/home');
 });
 
-router.get('/about',(req,res)=>{ //callback - funcao que trata dado evento  GET
+router.get('/about', (req, res) => { //callback - funcao que trata dado evento  GET
 
     res.render('pages/about');
 });
 
-router.get('/cadastro',(req,res)=>{ //callback - funcao que trata dado evento  GET
+router.get('/cadastro', (req, res) => { //callback - funcao que trata dado evento  GET
 
     //a funcao render pode receber um pametro na forma de objeto literal
     //no caso, ela irá receber um objeto com campo chamado users e com valor igual ao vetor users
-    res.render('pages/cadastro',{users:users}); 
+    res.render('pages/cadastro', {
+        users: users
+    });
 });
 
-router.post('/cadastro/remove',(req,res)=>{
+router.post('/cadastro/remove', (req, res) => {
     //let item =req.body.id; //pega o valor passado através do parâmetro id e atribui a variável item. 
     let name = req.body.name;
 
-    if(users.length==0){
+    if (users.length == 0) {
         console.log("Erro: Não há elemento a ser removido!");
         return res.status(500).json({
-            status:'error',
-            error:`Removed element: ${name}`
+            status: 'error',
+            error: `Removed element: ${name}`
         });
 
     } else {
-        for(let cont=0;cont<users.length;cont++){
-            if(users[cont].name==name){
-                users.splice(cont,1);
-                console.log("Elemento Removido: ",name);
+        for (let cont = 0; cont < users.length; cont++) {
+            if (users[cont].name == name) {
+                users.splice(cont, 1);
+                console.log("Elemento Removido: ", name);
                 return res.status(200).json({
-                    status:'sucess',
-                    data:users
+                    status: 'sucess',
+                    data: users
                 });
                 //res.send(JSON.stringify({sucess:`Elemento removido com sucesso: ${name}`}));
-            } else if(cont==users.length-1){
-                console.log("Erro ao remover elemento: ",name);
+            } else if (cont == users.length - 1) {
+                console.log("Erro ao remover elemento: ", name);
                 return res.status(400).json({
-                    status:'error',
-                    error:`Didn't Remove element: ${name}`
+                    status: 'error',
+                    error: `Didn't Remove element: ${name}`
                 });
             }
         }
     }
-    
-    
+
+
     //users.splice(item,1); //este método permite adicionar ou remover um item do vetor em uma dada posição. 
     //res.render('pages/cadastro',{users:users});
     //res.sendStatus(200); //envia mensagem 200 significando que as modificacoes foram ok
     //res.send(JSON.stringify({sucess:`Elemento removido com sucesso: ${name}`}));
     //console.log("Elemento Removido: ",name);
-    
+
 });
 
 
-router.post('/cadastro/update',(req,res)=>{
+router.post('/cadastro/update', (req, res) => {
     //substitui os valores armazenados no item do vetror dado por id, por valores fornecidos como parametro vindos do navegador.
     //recebe dados do cliente na forma de um objeto JSON
 
-    users[req.body.id].name=req.body.name; //ID do objeto ou Tag: name
-    users[req.body.id].email=req.body.email;
-    users[req.body.id].address=req.body.address;
-    users[req.body.id].age=req.body.age;
-    users[req.body.id].heigth=req.body.heigth;
-    users[req.body.id].vote=req.body.vote;
+    users[req.body.id].name = req.body.name; //ID do objeto ou Tag: name
+    users[req.body.id].email = req.body.email;
+    users[req.body.id].address = req.body.address;
+    users[req.body.id].age = req.body.age;
+    users[req.body.id].heigth = req.body.heigth;
+    users[req.body.id].vote = req.body.vote;
 
 
     res.sendStatus(200); //envia mensagem 200 significando que as modificacoes foram ok
-    console.log("Dados recebidos: ",req.body);//mostra no console do servidor os dados recebidos
+    console.log("Dados recebidos: ", req.body); //mostra no console do servidor os dados recebidos
 });
 
-router.get('/cadastro/list',(req,res)=>{
+router.get('/cadastro/list', (req, res) => {
     //Para fazer em casa: Como seria uma rotina para listar todos os itens cadastrados?
 
 });
 
-router.post('/cadastro/add',(req,res)=>{
-    let user={name:"",email:"",address:"",heigth:"",age:"",vote:""};
+router.post('/cadastro/add', (req, res) => {
 
-    user.name = req.body._name;
-    user.email = req.body._email;
-    user.address = req.body._address;
-    user.heigth = req.body._heigth;
-    user.age = req.body._age;
-    user.vote = req.body._vote;
+    let user = {
+        name: "",
+        email: "",
+        address: "",
+        height: "",
+        age: "",
+        vote: ""
+    };
 
-    users.push(user);
-    console.log("Usuário cadastrado: ",user);
-    console.log("Lista dos usuários: ",users); //nao use esta linha se tiver muitos elementos em users pois causara lentidao no servidor
-    res.sendStatus(200);
-    res.status(200).json({
-        status:'sucess',
-        data: `Usuário ${user} foi adiocionado com sucesso!`
-    });
+    function validateData(user) {
+
+        if (user.name == "" || user.email == "" || user.address == "" || user.age == "" || !isNaN(user.age) || !isNaN(user.height) || user.height == "") {
+            return false;
+        }
+
+    }
+
+    const validate = validateData(user);
+
+    if (user.age >= 18 && !(user.age == "")) {
+        user.vote = true;
+    } else {
+        user.vote = false
+    }
+
+    if (validate) {
+        users.push(user);
+        console.log("Usuário cadastrado: ");
+        console.table(user);
+        return res.sendStatus(200).json({
+            status: 'success',
+            data: users
+        });
+    } else {
+        return res.sendStatus(400).json({
+            status: 'error',
+            error: 'Criação de usuário inválido'
+        });
+    }
+
+    // if(typeof(user.name) == 'string'){
+    //     user.name = req.body._name;
+    // } else {
+    //     return res.status(500);
+    // }
+
+    // if(typeof(user.email) == 'string'){
+    //     user.email = req.body._email;
+    // } else {
+    //     return res.status(500);
+    // }
+
+    // if(typeof(user.address) == 'string'){
+    //     user.address = req.body._address;
+    // } else {
+    //     return res.status(500);
+    // }
+
+    // if(!isNaN(user.height)) {
+    //     user.height = req.body._height;
+    // } else {
+    //     console.log('deu pau');
+    // }
+
+    // if(!isNaN(user.age)) {
+    //     user.age = req.body._age;
+    // } else {
+    //     console.log('deu pau');
+    // }
+
+    // if(typeof(user.vote) == 'boolean') {
+    //     user.vote = req.body._vote;
+    // } else {
+    //     console.log('deu pau');
+    // }
+
+    // await console.log("Lista dos usuários: ",users); //nao use esta linha se tiver muitos elementos em users pois causara lentidao no servidor
+    // res.sendStatus(200);
+    // res.status(200).json({
+    //     status: 'sucess',
+    //     data: `Usuário ${user} foi adiocionado com sucesso!`
+    // });
 
 });
 
