@@ -114,84 +114,43 @@ router.post('/cadastro/add', (req, res) => {
         name: "",
         email: "",
         address: "",
-        height: "",
+        heigth: "",
         age: "",
         vote: ""
-    };
+    }
+    
+    user.name = req.body._name;
+    user.email = req.body._email;
+    user.address = req.body._address;
+    user.heigth = req.body._heigth;
+    user.age = req.body._age;
 
-    function validateData(user) {
+    console.table(user)
 
-        if (user.name == "" || user.email == "" || user.address == "" || user.age == "" || !isNaN(user.age) || !isNaN(user.height) || user.height == "") {
-            return false;
+    if (!(user.name == "") && !(user.email == "") && !(user.address == "") && !(user.heigth == "") && !(user.age == "")) {
+        if (user.age >= 18) {
+            user.vote = true;
+        } else {
+            user.vote = false;
         }
 
-    }
-
-    const validate = validateData(user);
-
-    if (user.age >= 18 && !(user.age == "")) {
-        user.vote = true;
-    } else {
-        user.vote = false
-    }
-
-    if (validate) {
         users.push(user);
         console.log("Usuário cadastrado: ");
         console.table(user);
-        return res.sendStatus(200).json({
-            status: 'success',
+
+        // return res.status(200).json({
+        //     status: 'success',
+        //     data: users
+        // });
+        return res.render('pages/cadastro', {
             data: users
-        });
+        })
     } else {
-        return res.sendStatus(400).json({
+        return res.status(400).json({
             status: 'error',
             error: 'Criação de usuário inválido'
         });
     }
-
-    // if(typeof(user.name) == 'string'){
-    //     user.name = req.body._name;
-    // } else {
-    //     return res.status(500);
-    // }
-
-    // if(typeof(user.email) == 'string'){
-    //     user.email = req.body._email;
-    // } else {
-    //     return res.status(500);
-    // }
-
-    // if(typeof(user.address) == 'string'){
-    //     user.address = req.body._address;
-    // } else {
-    //     return res.status(500);
-    // }
-
-    // if(!isNaN(user.height)) {
-    //     user.height = req.body._height;
-    // } else {
-    //     console.log('deu pau');
-    // }
-
-    // if(!isNaN(user.age)) {
-    //     user.age = req.body._age;
-    // } else {
-    //     console.log('deu pau');
-    // }
-
-    // if(typeof(user.vote) == 'boolean') {
-    //     user.vote = req.body._vote;
-    // } else {
-    //     console.log('deu pau');
-    // }
-
-    // await console.log("Lista dos usuários: ",users); //nao use esta linha se tiver muitos elementos em users pois causara lentidao no servidor
-    // res.sendStatus(200);
-    // res.status(200).json({
-    //     status: 'sucess',
-    //     data: `Usuário ${user} foi adiocionado com sucesso!`
-    // });
 
 });
 
